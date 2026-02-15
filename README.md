@@ -70,6 +70,40 @@ node signing_service.js
 - `/get_chamby <TON_address>` — получить токены
 - `/stats` — статистика бота
 
+## Signing Service
+
+Отдельный Node.js-сервис, который хранит приватный ключ кошелька и подписывает транзакции отправки Jetton-токенов. Разворачивается на отдельном VPS для безопасности — seed-фраза никогда не покидает сервер.
+
+**Стек:** Express.js, tonweb, tonweb-mnemonic
+
+**API эндпоинты:**
+
+| Метод | Путь | Описание |
+|---|---|---|
+| `GET` | `/health` | Проверка работоспособности сервиса |
+| `POST` | `/api/v1/send_tokens` | Отправка Jetton-токенов (требует `X-API-Key`) |
+| `GET` | `/api/v1/balance` | Баланс TON на кошельке-отправителе (требует `X-API-Key`) |
+
+**Конфигурация signing-service** (файл `signing-service/.env`):
+
+| Переменная | Описание |
+|---|---|
+| `API_SECRET_KEY` | Секретный ключ для авторизации запросов от бота |
+| `SENDER_WALLET_SEED` | Seed-фраза кошелька (24 слова) |
+| `CHAMBY_JETTON_CONTRACT` | Адрес контракта Chamby Jetton |
+| `TONCENTER_API_KEY` | Ключ от toncenter.com API |
+| `MAX_AMOUNT_PER_TX` | Максимум токенов за одну транзакцию (по умолчанию 100000) |
+| `RATE_LIMIT_PER_MINUTE` | Лимит запросов в минуту (по умолчанию 10) |
+
+**Запуск через Docker:**
+
+```bash
+cd signing-service
+cp .env.example .env
+# Заполните .env
+docker-compose up -d
+```
+
 ## Правила раздачи
 
 - До 3 запросов в сутки на пользователя
